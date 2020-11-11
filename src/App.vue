@@ -1,15 +1,15 @@
 <template>
   <div id="app">
-    <QuickSort />
+    <SortingVisualizer />
   </div>
 </template>
 
 <script>
-import QuickSort from "@/components/QuickSort";
+import SortingVisualizer from "@/components/sortingVisualizer";
 export default {
   name: "App",
   components: {
-    QuickSort,
+    SortingVisualizer,
   },
 };
 </script>
@@ -21,6 +21,5 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
 </style>
