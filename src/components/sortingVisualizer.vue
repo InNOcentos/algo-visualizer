@@ -16,21 +16,35 @@
         Generate new array
       </button>
       <select class="control btn-select">
-        <option value="quickSort">Quick Sort</option>
+        <option value="mergeSort">Merge Sort</option>
       </select>
-      <button @click="this.quickSort" class="control btn-run">Run</button>
-      <button @click="this.testSortingAlgoritms" class="control btn-test">
+
+      <!-- <button @click="this.testSortingAlgoritms" class="control btn-test">
         Test
-      </button>
+      </button> -->
+      <button @click="this.mergeSort" class="control btn-run">Run</button>
+      <span class="control">Speed:</span>
+      <input
+        type="number"
+        class="speed control"
+        placeholder="speed"
+        v-model="settings.ANIMATION_SPEED_MS"
+      />
     </div>
   </div>
 </template>
 
 <script>
-import { quickSortAlgoritm } from "../sortingAlgoritms/quickSortAlgoritm.js";
+import { mergeSortAlgoritm } from "../sortingAlgoritms/mergeSortAlgoritm.js";
 export default {
   data: () => ({
     array: [],
+    settings: {
+      ANIMATION_SPEED_MS: 1,
+      NUMBER_OF_ARRAY_BARS: 250,
+      PRIMARY_COLOR: "turquoise",
+      SECONDARY_COLOR: "red",
+    },
   }),
   mounted() {
     this.resetArray();
@@ -38,7 +52,7 @@ export default {
   methods: {
     resetArray() {
       const array = [];
-      for (let i = 0; i < 180; i++) {
+      for (let i = 0; i < this.settings.NUMBER_OF_ARRAY_BARS; i++) {
         array.push(this.randomIntFromInterval(5, 730));
       }
       this.array = array;
@@ -53,23 +67,46 @@ export default {
     randomIntFromInterval(min, max) {
       return Math.floor(Math.random() * (max - min + 1) + min);
     },
-    quickSort() {
-      const javascriptSortedArray = this.array.slice().sort((a, b) => a - b);
-      const sortedArray = quickSortAlgoritm(this.array);
-
-      console.log(this.arraysAreEqual(javascriptSortedArray, sortedArray));
+    mergeSort() {
+      const animations = mergeSortAlgoritm(this.array);
+      for (let i = 0; i < animations.length; i++) {
+        const arrayBars = document.getElementsByClassName("array-bar");
+        const isColorChange = i % 3 !== 2;
+        if (isColorChange) {
+          const [barOneIdx, barTwoIdx] = animations[i];
+          const barOneStyle = arrayBars[barOneIdx].style;
+          const barTwoStyle = arrayBars[barTwoIdx].style;
+          const color =
+            i % 3 === 0
+              ? this.settings.SECONDARY_COLOR
+              : this.settings.PRIMARY_COLOR;
+          setTimeout(() => {
+            barOneStyle.backgroundColor = color;
+            barTwoStyle.backgroundColor = color;
+          }, i * this.settings.ANIMATION_SPEED_MS);
+        } else {
+          setTimeout(() => {
+            const [barOneIdx, newHeight] = animations[i];
+            const barOneStyle = arrayBars[barOneIdx].style;
+            barOneStyle.height = `${newHeight}px`;
+          }, i * this.settings.ANIMATION_SPEED_MS);
+        }
+      }
     },
     testSortingAlgoritms() {
-      for (let i = 0; i < 100; i++) {
+      for (let i = 0; i < 1; i++) {
         const array = [];
         const length = this.randomIntFromInterval(1, 1000);
-        for (let j = 0; j < length; j++) {
+        for (let i = 0; i < length; i++) {
           array.push(this.randomIntFromInterval(-1000, 1000));
         }
-        const javascriptSortedArray = this.array.slice().sort((a, b) => a - b);
-        const sortedArray = quickSortAlgoritm(this.array);
-
-        console.log(this.arraysAreEqual(javascriptSortedArray, sortedArray));
+        const javaScriptSortedArray = this.array.slice().sort((a, b) => a - b);
+        console.log(javaScriptSortedArray);
+        const mergeSortedArray = mergeSortAlgoritm(array.slice());
+        console.log(mergeSortedArray);
+        console.log(
+          this.arraysAreEqual(javaScriptSortedArray, mergeSortedArray)
+        );
       }
     },
   },
@@ -94,7 +131,7 @@ export default {
 }
 .array-controls {
   display: flex;
-  max-width: 700px;
+  max-width: 750px;
   width: 100%;
   justify-content: space-between;
   margin: 0 auto;
@@ -102,9 +139,13 @@ export default {
 .control {
   max-width: 150px;
   width: 100%;
-  margin: 4px 0;
+  margin: 0 5px;
 }
 .btn-select {
   outline: none;
+}
+.btn-run {
+  background-color: yellow;
+  color: black;
 }
 </style>
