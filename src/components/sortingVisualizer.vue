@@ -19,7 +19,15 @@
         id="speedRange"
         v-on:input="resetArray"
       />
-      <button @click="this.mergeSort" class="toolbar-elem run-btn">Run</button>
+      <button @click="this.mergeSort" class="toolbar-elem run-btn">
+        Run mergeSort
+      </button>
+      <button @click="this.quickSort" class="toolbar-elem run-btn">
+        Run quickSort
+      </button>
+      <button @click="this.bubbleSort" class="toolbar-elem run-btn">
+        Run bubbleSort
+      </button>
     </div>
 
     <div class="array-container">
@@ -39,16 +47,20 @@
 </template>
 
 <script>
-import { mergeSortAlgoritm } from "../sortingAlgoritms/mergeSortAlgoritm.js";
+import {
+  mergeSortAlgorithm,
+  quickSortAlgorithm,
+  bubbleSortAlgorithm,
+} from "../sortingAlgoritms";
 export default {
   data: () => ({
     array: [],
     settings: {
-      MULTIPLICATION_FACTOR: 50,
+      MULTIPLICATION_FACTOR: 41,
       colors: {
-        PRIMARY_COLOR: "#ed6663",
+        PRIMARY_COLOR: "#637373",
         SECONDARY_COLOR: "#132743",
-        DEFAULT_COLOR: "#f1f3f8",
+        DEFAULT_COLOR: "#ffeadb",
         CURRENT_COLOR: null,
       },
     },
@@ -59,6 +71,7 @@ export default {
   }),
   computed: {
     animationSpeed() {
+      console.log(this.settings.MULTIPLICATION_FACTOR);
       return this.settings.MULTIPLICATION_FACTOR / 3.5;
     },
     numberOfArrayBars() {
@@ -101,7 +114,8 @@ export default {
       return Math.floor(Math.random() * (max - min + 1) + min);
     },
     mergeSort() {
-      const animations = mergeSortAlgoritm(this.array);
+      const animations = mergeSortAlgorithm(this.array);
+      console.log(animations[0]);
       const arrayBars = document.getElementsByClassName("array-bar");
       /* const toolbarStatus = Object.keys(this.toolbarVisibility.status)[0];
       this.toolbarVisibility.status[
@@ -116,7 +130,7 @@ export default {
           const color =
             i % 3 === 0
               ? this.settings.colors.SECONDARY_COLOR
-              : this.settings.colors.PRIMARY_COLOR;
+              : this.settings.colors.DEFAULT_COLOR;
           this.settings.colors.CURRENT_COLOR = this.settings.colors.PRIMARY_COLOR;
           setTimeout(() => {
             barOneStyle.backgroundColor = color;
@@ -131,20 +145,85 @@ export default {
         }
       }
     },
-    testSortingAlgoritms() {
-      for (let i = 0; i < 1; i++) {
-        const array = [];
-        const length = this.randomIntFromInterval(1, 1000);
-        for (let i = 0; i < length; i++) {
-          array.push(this.randomIntFromInterval(-1000, 1000));
+    quickSort() {
+      let animations = quickSortAlgorithm(this.array);
+      console.log(animations);
+      const arrayBars = document.getElementsByClassName("array-bar");
+      for (let i = 0; i < animations.length; i++) {
+        this.settings.colors.CURRENT_COLOR = this.settings.colors.PRIMARY_COLOR;
+
+        if (i % 3 === 0) {
+          const [barOneIdx, barTwoIdx] = animations[i];
+          const barOneStyle = arrayBars[barOneIdx].style;
+          const barTwoStyle = arrayBars[barTwoIdx].style;
+          const color = this.settings.colors.PRIMARY_COLOR;
+          setTimeout(() => {
+            barOneStyle.backgroundColor = color;
+            barTwoStyle.backgroundColor = color;
+          }, i * this.animationSpeed);
+        } else if (i % 3 === 1) {
+          const [barOneIdx, barTwoIdx] = animations[i];
+          const barOneStyle = arrayBars[barOneIdx].style;
+          const barTwoStyle = arrayBars[barTwoIdx].style;
+          const color = this.settings.colors.SECONDARY_COLOR;
+          setTimeout(() => {
+            barOneStyle.backgroundColor = color;
+            barTwoStyle.backgroundColor = color;
+          }, i * this.animationSpeed);
+        } else {
+          setTimeout(() => {
+            const [
+              barOneIdx,
+              barOneHeight,
+              barTwoIdx,
+              barTwoHeight,
+            ] = animations[i];
+            const barOneStyle = arrayBars[barOneIdx].style;
+            const barTwoStyle = arrayBars[barTwoIdx].style;
+            barOneStyle.height = `${barTwoHeight}px`;
+            barTwoStyle.height = `${barOneHeight}px`;
+          }, i * this.animationSpeed);
         }
-        const javaScriptSortedArray = this.array.slice().sort((a, b) => a - b);
-        console.log(javaScriptSortedArray);
-        const mergeSortedArray = mergeSortAlgoritm(array.slice());
-        console.log(mergeSortedArray);
-        console.log(
-          this.arraysAreEqual(javaScriptSortedArray, mergeSortedArray)
-        );
+      }
+      /* arrayBars[i].style.height = `${this.array[i]}px`; */
+      /* const arrayBars = document.getElementsByClassName("array-bar");
+      for (let i = 0; i < animations.length; i++) {
+        arrayBars[i].style.height = `${animations[i]}px`;
+      } */
+    },
+    bubbleSort() {
+      console.log(this.array);
+      let animations = bubbleSortAlgorithm(this.array);
+      console.log(animations);
+      const arrayBars = document.getElementsByClassName("array-bar");
+      for (let i = 0; i < animations.length; i++) {
+        let isSwap = i % 3 !== 2;
+        if (isSwap) {
+          const [barOneIdx, barTwoIdx] = animations[i];
+          const barOneStyle = arrayBars[barOneIdx].style;
+          const barTwoStyle = arrayBars[barTwoIdx].style;
+          const color =
+            i % 3 === 0
+              ? this.settings.colors.SECONDARY_COLOR
+              : this.settings.colors.DEFAULT_COLOR;
+          setTimeout(() => {
+            barOneStyle.backgroundColor = color;
+            barTwoStyle.backgroundColor = color;
+          }, i * 1);
+        } else {
+          setTimeout(() => {
+            const [
+              barOneIdx,
+              barTwoIdx,
+              barOneHeight,
+              barTwoHeight,
+            ] = animations[i];
+            const barOneStyle = arrayBars[barOneIdx].style;
+            const barTwoStyle = arrayBars[barTwoIdx].style;
+            barOneStyle.height = `${barTwoHeight}px`;
+            barTwoStyle.height = `${barOneHeight}px`;
+          }, i * 1);
+        }
       }
     },
   },
@@ -163,6 +242,7 @@ export default {
 .array-bar {
   display: inline-block;
   margin: 0 1px;
+  transition: height 0.001s;
 }
 .toolbar {
   position: absolute;

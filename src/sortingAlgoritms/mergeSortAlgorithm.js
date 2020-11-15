@@ -1,4 +1,4 @@
-export function mergeSortAlgoritm(array) {
+export default function mergeSortAlgorithm(array) {
   const animations = [];
   if (array.length <= 1) return array;
   const auxiliaryArray = array.slice();

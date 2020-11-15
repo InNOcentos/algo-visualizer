@@ -20,7 +20,7 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  background-color: #64958f;
+  background-color: #cbaf87;
   min-height: 100vh;
 }
 body {
