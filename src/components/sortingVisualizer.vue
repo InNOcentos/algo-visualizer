@@ -12,7 +12,7 @@
           <input
             type="range"
             class="speed-elem toolbar-elem"
-            v-model="settings.MULTIPLICATION_FACTOR"
+            v-model="settings.ANIMATION_DELAY"
             min="10"
             max="110"
             id="speedRange"
@@ -97,9 +97,10 @@ export default {
   data: () => ({
     array: [],
     settings: {
-      MULTIPLICATION_FACTOR: 40,
+      MULTIPLICATION_FACTOR: 3,
+      ANIMATION_DELAY: 40,
       colors: {
-        RESULT_COLOR: "#fbd46d",
+        RESULT_COLOR: "#ffaaa5",
         SECONDARY_COLOR: "#1c2b2d",
         DEFAULT_COLOR: "#ffeadb",
         CURRENT_COLOR: null,
@@ -108,13 +109,13 @@ export default {
   }),
   computed: {
     animationSpeed() {
-      return this.settings.MULTIPLICATION_FACTOR / 5;
+      return (this.settings.ANIMATION_DELAY / 10) * 2;
     },
     numberOfArrayBars() {
-      return 160 - this.settings.MULTIPLICATION_FACTOR;
+      return 160 - this.settings.ANIMATION_DELAY;
     },
     widthOfArrayBars() {
-      return 500 / (140 - this.settings.MULTIPLICATION_FACTOR);
+      return 500 / (140 - this.settings.ANIMATION_DELAY);
     },
   },
   mounted() {
@@ -427,7 +428,7 @@ input[type="range"]::-webkit-slider-thumb {
 input[type="range"]::-webkit-slider-runnable-track {
   width: 200px;
   height: 10px;
-  background: #AAA;
+  background: #ffeadb;
 }
 input[type="range"]::-webkit-slider-thumb {
   position: relative;
@@ -445,7 +446,7 @@ input[type="range"]::-webkit-slider-thumb::before {
   width: 300px; /* make this bigger than the widest range input element */
   left: -302px; /* this should be -2px - width */
   top: 8px; /* don't change this */
-  background: #777;
+  background: #ffeadb;
 }
 /* /rAnge */
 .algorithm {
@@ -514,7 +515,7 @@ input[type="range"]::-webkit-slider-thumb::before {
 .run-btn:hover,
 .run-btn.inProgress {
   cursor: pointer;
-  background-color: #c7e2b2;
-  color: #3b6978;
+  background-color: #ff9a76;
+  color: #065c6f;
 }
 </style>
