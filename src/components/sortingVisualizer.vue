@@ -28,6 +28,9 @@
       <button @click="this.bubbleSort" class="toolbar-elem run-btn">
         Run bubbleSort
       </button>
+      <button @click="this.heapSort" class="toolbar-elem run-btn">
+        Run heapSort
+      </button>
     </div>
 
     <div class="array-container">
@@ -51,6 +54,7 @@ import {
   mergeSortAlgorithm,
   quickSortAlgorithm,
   bubbleSortAlgorithm,
+  heapSortAlgorithm,
 } from "../sortingAlgoritms";
 export default {
   data: () => ({
@@ -199,6 +203,39 @@ export default {
       for (let i = 0; i < animations.length; i++) {
         let isSwap = i % 3 !== 2;
         if (isSwap) {
+          const [barOneIdx, barTwoIdx] = animations[i];
+          const barOneStyle = arrayBars[barOneIdx].style;
+          const barTwoStyle = arrayBars[barTwoIdx].style;
+          const color =
+            i % 3 === 0
+              ? this.settings.colors.SECONDARY_COLOR
+              : this.settings.colors.DEFAULT_COLOR;
+          setTimeout(() => {
+            barOneStyle.backgroundColor = color;
+            barTwoStyle.backgroundColor = color;
+          }, i * this.animationSpeed);
+        } else {
+          setTimeout(() => {
+            const [
+              barOneIdx,
+              barTwoIdx,
+              barOneHeight,
+              barTwoHeight,
+            ] = animations[i];
+            const barOneStyle = arrayBars[barOneIdx].style;
+            const barTwoStyle = arrayBars[barTwoIdx].style;
+            barOneStyle.height = `${barTwoHeight}px`;
+            barTwoStyle.height = `${barOneHeight}px`;
+          }, i * this.animationSpeed);
+        }
+      }
+    },
+    heapSort() {
+      const animations = heapSortAlgorithm(this.array);
+      const arrayBars = document.getElementsByClassName("array-bar");
+      for (let i = 0; i < animations.length; i++) {
+        const isColorChange = i % 3 !== 2;
+        if (isColorChange) {
           const [barOneIdx, barTwoIdx] = animations[i];
           const barOneStyle = arrayBars[barOneIdx].style;
           const barTwoStyle = arrayBars[barTwoIdx].style;
