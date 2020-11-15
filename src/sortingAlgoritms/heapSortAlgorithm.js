@@ -1,7 +1,7 @@
 export default function heapSortAlgorithm(array) {
   const animations = [];
-  heapSort(array, animations);
-  return animations;
+  const result = heapSort(array, animations);
+  return [animations, result];
 }
 
 function heapSort(array, animations) {

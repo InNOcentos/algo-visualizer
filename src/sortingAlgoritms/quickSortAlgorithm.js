@@ -1,8 +1,8 @@
 export default function quickSortAlgorithm(array) {
   if (array.length <= 1) return array;
   const animations = [];
-  quickSortHelper(array, 0, array.length - 1, animations);
-  return animations;
+  const result = quickSortHelper(array, 0, array.length - 1, animations);
+  return [animations, result];
 }
 function quickSortHelper(items, left, right, animations) {
   if (items.length > 1) {

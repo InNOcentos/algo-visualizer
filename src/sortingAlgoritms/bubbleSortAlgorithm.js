@@ -1,7 +1,7 @@
 export default function bubbleSortAlgorithm(array) {
   const animations = [];
-  bubbleSortHelper(array, animations);
-  return animations;
+  const sortedArray = bubbleSortHelper(array, animations);
+  return [animations, sortedArray];
 }
 
 const bubbleSortHelper = (array, animations) => {
