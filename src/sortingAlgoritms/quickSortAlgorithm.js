@@ -22,8 +22,6 @@ function partition(items, left, right, animations) {
     i = left,
     j = right;
   while (i <= j) {
-    animations.push([i, j]);
-    animations.push([i, j]);
     while (items[i] < pivot) {
       i++;
     }
@@ -31,8 +29,10 @@ function partition(items, left, right, animations) {
       j--;
     }
     if (i <= j) {
+      animations.push([i, j]);
+      animations.push([i, j]);
       animations.push([i, j, items[i], items[j]]);
-      animations.push([true]);
+      /*       animations.push([true]); */
       swap(items, i, j);
       i++;
       j--;

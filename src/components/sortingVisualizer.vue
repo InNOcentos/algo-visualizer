@@ -35,6 +35,15 @@
               <button
                 class="toolbar__btn algo-btn"
                 @click="this.pickAlgorithm"
+                value="heapSort"
+              >
+                Heap Sort
+              </button>
+            </li>
+            <li class="algo-list__item">
+              <button
+                class="toolbar__btn algo-btn"
+                @click="this.pickAlgorithm"
                 value="quickSort"
               >
                 Quick Sort
@@ -47,15 +56,6 @@
                 value="bubbleSort"
               >
                 Bubble Sort
-              </button>
-            </li>
-            <li class="algo-list__item">
-              <button
-                class="toolbar__btn algo-btn"
-                @click="this.pickAlgorithm"
-                value="heapSort"
-              >
-                Heap Sort
               </button>
             </li>
           </ul>
@@ -99,7 +99,7 @@ export default {
     settings: {
       MULTIPLICATION_FACTOR: 40,
       colors: {
-        PRIMARY_COLOR: "#637373",
+        RESULT_COLOR: "#fbd46d",
         SECONDARY_COLOR: "#1c2b2d",
         DEFAULT_COLOR: "#ffeadb",
         CURRENT_COLOR: null,
@@ -108,19 +108,30 @@ export default {
   }),
   computed: {
     animationSpeed() {
-      return this.settings.MULTIPLICATION_FACTOR / 3.5;
+      return this.settings.MULTIPLICATION_FACTOR / 5;
     },
     numberOfArrayBars() {
       return 160 - this.settings.MULTIPLICATION_FACTOR;
     },
     widthOfArrayBars() {
-      return 500 / (150 - this.settings.MULTIPLICATION_FACTOR);
+      return 500 / (140 - this.settings.MULTIPLICATION_FACTOR);
     },
   },
   mounted() {
     this.resetArray();
   },
   methods: {
+    resetArray() {
+      const array = [];
+      for (let i = 0; i < this.numberOfArrayBars; i++) {
+        array.push(this.randomIntFromInterval(5, 730));
+      }
+      this.array = array;
+      const arrayBars = document.getElementsByClassName("array-bar");
+      for (let i = 0; i < arrayBars.length; i++) {
+        arrayBars[i].style.backgroundColor = this.settings.colors.DEFAULT_COLOR;
+      }
+    },
     startSort(event) {
       const selectedAlgorithm = document.getElementsByClassName("active")[0]
         .value;
@@ -134,33 +145,30 @@ export default {
       });
       event.target.classList.add("active");
     },
-    resetArray() {
-      const array = [];
-      for (let i = 0; i < this.numberOfArrayBars; i++) {
-        array.push(this.randomIntFromInterval(5, 730));
-      }
-      this.array = array;
-      const arrayBars = document.getElementsByClassName("array-bar");
-      for (let i = 0; i < arrayBars.length; i++) {
-        arrayBars[i].style.backgroundColor = this.settings.colors.DEFAULT_COLOR;
-      }
-    },
-    arraysAreEqual(arrayOne, arrayTwo) {
-      if (arrayOne.length !== arrayTwo.length) return false;
-      for (let i = 0; i < arrayOne.length; i++) {
-        if (arrayOne[i] !== arrayTwo[i]) return false;
-      }
-      return true;
-    },
     randomIntFromInterval(min, max) {
       return Math.floor(Math.random() * (max - min + 1) + min);
     },
+    toolbarLocker(animationsPromises, sortedArray, arrayBars) {
+      Promise.all(animationsPromises).then(() => {
+        document
+          .getElementsByClassName("inProgress")[0]
+          .classList.remove("inProgress");
+        document.getElementById("toolbar").style.pointerEvents = "auto";
+        for (let i = 0; i < sortedArray.length; i++) {
+          setTimeout(() => {
+            arrayBars[
+              i
+            ].style.backgroundColor = this.settings.colors.RESULT_COLOR;
+          }, i * this.animationSpeed);
+        }
+      });
+    },
     mergeSort() {
       const [animations, sortedArray] = mergeSortAlgorithm(this.array);
-      console.log(sortedArray);
       const arrayBars = document.getElementsByClassName("array-bar");
-      document.getElementById("toolbar").style.pointerEvents = "none";
       const animationsPromises = [];
+      console.log(animations);
+      document.getElementById("toolbar").style.pointerEvents = "none";
       for (let i = 0; i < animations.length; i++) {
         animationsPromises.push(
           new Promise((resolve) => {
@@ -171,8 +179,9 @@ export default {
               const barTwoStyle = arrayBars[barTwoIdx].style;
               const color =
                 i % 3 === 0
-                  ? this.settings.SECONDARY_COLOR
-                  : this.settings.PRIMARY_COLOR;
+                  ? this.settings.colors.SECONDARY_COLOR
+                  : this.settings.colors.DEFAULT_COLOR;
+              console.log(color);
               setTimeout(() => {
                 barOneStyle.backgroundColor = color;
                 barTwoStyle.backgroundColor = color;
@@ -189,87 +198,49 @@ export default {
           })
         );
       }
-      Promise.all(animationsPromises).then(() => {
-        console.log(1);
-        document
-          .getElementsByClassName("inProgress")[0]
-          .classList.remove("inProgress");
-        document.getElementById("toolbar").style.pointerEvents = "auto";
-        for (let i = 0; i < sortedArray.length; i++) {
-          setTimeout(() => {
-            arrayBars[i].style.backgroundColor = "#fbd46d";
-          }, i * 3);
-        }
-      });
+      this.toolbarLocker(animationsPromises, sortedArray, arrayBars);
     },
     quickSort() {
       let [animations, sortedArray] = quickSortAlgorithm(this.array);
       const arrayBars = document.getElementsByClassName("array-bar");
       const animationsPromises = [];
-      let mark = false;
       document.getElementById("toolbar").style.pointerEvents = "none";
       for (let i = 0; i < animations.length; i++) {
         animationsPromises.push(
           new Promise((resolve) => {
-            let isMark = animations[i].length === 1;
-            if (isMark) {
-              mark = true;
-              resolve();
+            let isSwap = i % 3 !== 2;
+            if (isSwap) {
+              const [barOneIdx, barTwoIdx] = animations[i];
+              const barOneStyle = arrayBars[barOneIdx].style;
+              const barTwoStyle = arrayBars[barTwoIdx].style;
+              const color =
+                i % 3 === 0
+                  ? this.settings.colors.SECONDARY_COLOR
+                  : this.settings.colors.DEFAULT_COLOR;
+              setTimeout(() => {
+                barOneStyle.backgroundColor = color;
+                barTwoStyle.backgroundColor = color;
+                resolve();
+              }, i * this.animationSpeed);
             } else {
-              let isSwap = animations[i].length !== 4;
-              if (isSwap) {
-                const [barOneIdx, barTwoIdx] = animations[i];
+              setTimeout(() => {
+                const [
+                  barOneIdx,
+                  barTwoIdx,
+                  barOneHeight,
+                  barTwoHeight,
+                ] = animations[i];
                 const barOneStyle = arrayBars[barOneIdx].style;
                 const barTwoStyle = arrayBars[barTwoIdx].style;
-                let color;
-                if (!mark) {
-                  color =
-                    (i / 2) % 1 === 0
-                      ? this.settings.colors.SECONDARY_COLOR
-                      : this.settings.colors.DEFAULT_COLOR;
-                } else {
-                  color =
-                    (i / 2) % 1 !== 0
-                      ? this.settings.colors.SECONDARY_COLOR
-                      : this.settings.colors.DEFAULT_COLOR;
-                }
-                mark = false;
-                setTimeout(() => {
-                  barOneStyle.backgroundColor = color;
-                  barTwoStyle.backgroundColor = color;
-                  resolve();
-                }, i * 100);
-              } else {
-                setTimeout(() => {
-                  const [
-                    barOneIdx,
-                    barTwoIdx,
-                    barOneHeight,
-                    barTwoHeight,
-                  ] = animations[i];
-                  const barOneStyle = arrayBars[barOneIdx].style;
-                  const barTwoStyle = arrayBars[barTwoIdx].style;
-                  barOneStyle.height = `${barTwoHeight}px`;
-                  barTwoStyle.height = `${barOneHeight}px`;
-                  resolve();
-                }, i * 100);
-              }
+                barOneStyle.height = `${barTwoHeight}px`;
+                barTwoStyle.height = `${barOneHeight}px`;
+                resolve();
+              }, i * this.animationSpeed);
             }
           })
         );
       }
-      Promise.all(animationsPromises).then(() => {
-        console.log(1);
-        document
-          .getElementsByClassName("inProgress")[0]
-          .classList.remove("inProgress");
-        document.getElementById("toolbar").style.pointerEvents = "auto";
-        for (let i = 0; i < sortedArray.length; i++) {
-          setTimeout(() => {
-            arrayBars[i].style.backgroundColor = "#fbd46d";
-          }, i * 3);
-        }
-      });
+      this.toolbarLocker(animationsPromises, sortedArray, arrayBars);
     },
     bubbleSort() {
       let [animations, sortedArray] = bubbleSortAlgorithm(this.array);
@@ -292,7 +263,7 @@ export default {
                 barOneStyle.backgroundColor = color;
                 barTwoStyle.backgroundColor = color;
                 resolve();
-              }, i * 1);
+              }, i * this.animationSpeed);
             } else {
               setTimeout(() => {
                 const [
@@ -306,30 +277,20 @@ export default {
                 barOneStyle.height = `${barTwoHeight}px`;
                 barTwoStyle.height = `${barOneHeight}px`;
                 resolve();
-              }, i * 1);
+              }, i * this.animationSpeed);
             }
           })
         );
       }
-      Promise.all(animationsPromises).then(() => {
-        document
-          .getElementsByClassName("inProgress")[0]
-          .classList.remove("inProgress");
-        document.getElementById("toolbar").style.pointerEvents = "auto";
-        for (let i = 0; i < sortedArray.length; i++) {
-          setTimeout(() => {
-            arrayBars[i].style.backgroundColor = "#fbd46d";
-          }, i * 3);
-        }
-      });
+      this.toolbarLocker(animationsPromises, sortedArray, arrayBars);
     },
     heapSort() {
       const [animations, sortedArray] = heapSortAlgorithm(this.array);
       const arrayBars = document.getElementsByClassName("array-bar");
-      const animationsArray = [];
+      const animationsPromises = [];
       document.getElementById("toolbar").style.pointerEvents = "none";
       for (let i = 0; i < animations.length; i++) {
-        animationsArray.push(
+        animationsPromises.push(
           new Promise((resolve) => {
             const isColorChange = i % 3 !== 2;
             if (isColorChange) {
@@ -363,17 +324,7 @@ export default {
           })
         );
       }
-      Promise.all(animationsArray).then(() => {
-        document
-          .getElementsByClassName("inProgress")[0]
-          .classList.remove("inProgress");
-        document.getElementById("toolbar").style.pointerEvents = "auto";
-        for (let i = 0; i < sortedArray.length; i++) {
-          setTimeout(() => {
-            arrayBars[i].style.backgroundColor = "#fbd46d";
-          }, i * 3);
-        }
-      });
+      this.toolbarLocker(animationsPromises, sortedArray, arrayBars);
     },
   },
 };
@@ -504,6 +455,9 @@ input[type="range"]::-webkit-slider-thumb::before {
 }
 .algo-btn {
   padding: 0;
+}
+.algo-btn > span {
+  text-transform: lowercase;
 }
 .algo-btn:before {
   content: "";
