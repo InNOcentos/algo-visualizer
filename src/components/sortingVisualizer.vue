@@ -56,7 +56,7 @@ export default {
   data: () => ({
     array: [],
     settings: {
-      MULTIPLICATION_FACTOR: 41,
+      MULTIPLICATION_FACTOR: 40,
       colors: {
         PRIMARY_COLOR: "#637373",
         SECONDARY_COLOR: "#132743",
@@ -91,16 +91,9 @@ export default {
         array.push(this.randomIntFromInterval(5, 730));
       }
       this.array = array;
-      if (
-        this.settings.colors.CURRENT_COLOR ===
-        this.settings.colors.PRIMARY_COLOR
-      ) {
-        const arrayBars = document.getElementsByClassName("array-bar");
-        for (let i = 0; i < arrayBars.length; i++) {
-          arrayBars[
-            i
-          ].style.backgroundColor = this.settings.colors.DEFAULT_COLOR;
-        }
+      const arrayBars = document.getElementsByClassName("array-bar");
+      for (let i = 0; i < arrayBars.length; i++) {
+        arrayBars[i].style.backgroundColor = this.settings.colors.DEFAULT_COLOR;
       }
     },
     arraysAreEqual(arrayOne, arrayTwo) {
@@ -131,7 +124,6 @@ export default {
             i % 3 === 0
               ? this.settings.colors.SECONDARY_COLOR
               : this.settings.colors.DEFAULT_COLOR;
-          this.settings.colors.CURRENT_COLOR = this.settings.colors.PRIMARY_COLOR;
           setTimeout(() => {
             barOneStyle.backgroundColor = color;
             barTwoStyle.backgroundColor = color;
@@ -149,40 +141,48 @@ export default {
       let animations = quickSortAlgorithm(this.array);
       console.log(animations);
       const arrayBars = document.getElementsByClassName("array-bar");
+      let mark = false;
       for (let i = 0; i < animations.length; i++) {
-        this.settings.colors.CURRENT_COLOR = this.settings.colors.PRIMARY_COLOR;
-
-        if (i % 3 === 0) {
-          const [barOneIdx, barTwoIdx] = animations[i];
-          const barOneStyle = arrayBars[barOneIdx].style;
-          const barTwoStyle = arrayBars[barTwoIdx].style;
-          const color = this.settings.colors.PRIMARY_COLOR;
-          setTimeout(() => {
-            barOneStyle.backgroundColor = color;
-            barTwoStyle.backgroundColor = color;
-          }, i * this.animationSpeed);
-        } else if (i % 3 === 1) {
-          const [barOneIdx, barTwoIdx] = animations[i];
-          const barOneStyle = arrayBars[barOneIdx].style;
-          const barTwoStyle = arrayBars[barTwoIdx].style;
-          const color = this.settings.colors.SECONDARY_COLOR;
-          setTimeout(() => {
-            barOneStyle.backgroundColor = color;
-            barTwoStyle.backgroundColor = color;
-          }, i * this.animationSpeed);
+        let isMark = animations[i].length === 1;
+        if (isMark) {
+          mark = true;
         } else {
-          setTimeout(() => {
-            const [
-              barOneIdx,
-              barOneHeight,
-              barTwoIdx,
-              barTwoHeight,
-            ] = animations[i];
+          let isSwap = animations[i].length !== 4;
+          if (isSwap) {
+            const [barOneIdx, barTwoIdx] = animations[i];
             const barOneStyle = arrayBars[barOneIdx].style;
             const barTwoStyle = arrayBars[barTwoIdx].style;
-            barOneStyle.height = `${barTwoHeight}px`;
-            barTwoStyle.height = `${barOneHeight}px`;
-          }, i * this.animationSpeed);
+            let color;
+            if (!mark) {
+              color =
+                (i / 2) % 1 === 0
+                  ? this.settings.colors.SECONDARY_COLOR
+                  : this.settings.colors.DEFAULT_COLOR;
+            } else {
+              color =
+                (i / 2) % 1 !== 0
+                  ? this.settings.colors.SECONDARY_COLOR
+                  : this.settings.colors.DEFAULT_COLOR;
+            }
+            mark = false;
+            setTimeout(() => {
+              barOneStyle.backgroundColor = color;
+              barTwoStyle.backgroundColor = color;
+            }, i * this.animationSpeed);
+          } else {
+            setTimeout(() => {
+              const [
+                barOneIdx,
+                barTwoIdx,
+                barOneHeight,
+                barTwoHeight,
+              ] = animations[i];
+              const barOneStyle = arrayBars[barOneIdx].style;
+              const barTwoStyle = arrayBars[barTwoIdx].style;
+              barOneStyle.height = `${barTwoHeight}px`;
+              barTwoStyle.height = `${barOneHeight}px`;
+            }, i * this.animationSpeed);
+          }
         }
       }
       /* arrayBars[i].style.height = `${this.array[i]}px`; */
@@ -209,7 +209,7 @@ export default {
           setTimeout(() => {
             barOneStyle.backgroundColor = color;
             barTwoStyle.backgroundColor = color;
-          }, i * 1);
+          }, i * this.animationSpeed);
         } else {
           setTimeout(() => {
             const [
@@ -222,7 +222,7 @@ export default {
             const barTwoStyle = arrayBars[barTwoIdx].style;
             barOneStyle.height = `${barTwoHeight}px`;
             barTwoStyle.height = `${barOneHeight}px`;
-          }, i * 1);
+          }, i * this.animationSpeed);
         }
       }
     },
