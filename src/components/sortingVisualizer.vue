@@ -1,6 +1,6 @@
 <template>
   <div class="main">
-    <div class="toolbar" id="toolbar">
+    <div class="toolbar" ref="toolbar">
       <div class="toolbar-top">
         <div class="toolbar__elem toolbar--generate">
           <button class="toolbar__btn generate-btn" @click="resetArray">
@@ -22,40 +22,19 @@
         <div class="toolbar__elem toolbar--choose">
           <span class="toolbar__text">Choose algorithm:</span>
           <ul class="algo-list">
-            <li class="algo-list__item">
-              <button
-                class="toolbar__btn algo-btn active"
-                @click="this.pickAlgorithm"
-                value="mergeSort"
-              >
-                Merge Sort
-              </button>
-            </li>
-            <li class="algo-list__item">
+            <li
+              class="algo-list__item"
+              v-for="(algo, index) in algorithms"
+              :key="index"
+            >
               <button
                 class="toolbar__btn algo-btn"
-                @click="this.pickAlgorithm"
-                value="heapSort"
+                :isActive="activeAlgorithmIndex === index"
+                @click="toggleActiveAlgorithm(index)"
+                :class="{ active: activeAlgorithmIndex === index }"
+                :value="algorithms[index]"
               >
-                Heap Sort
-              </button>
-            </li>
-            <li class="algo-list__item">
-              <button
-                class="toolbar__btn algo-btn"
-                @click="this.pickAlgorithm"
-                value="quickSort"
-              >
-                Quick Sort
-              </button>
-            </li>
-            <li class="algo-list__item">
-              <button
-                class="toolbar__btn algo-btn"
-                @click="this.pickAlgorithm"
-                value="bubbleSort"
-              >
-                Bubble Sort
+                {{ algo }}
               </button>
             </li>
           </ul>
@@ -63,7 +42,11 @@
       </div>
       <div class="toolbar-bottom toolbar-run">
         <div class="toolbar-elem">
-          <button class="toolbar__btn run-btn" id="run" @click="this.startSort">
+          <button
+            class="toolbar__btn run-btn"
+            @click="this.startSort"
+            ref="run"
+          >
             Run
           </button>
         </div>
@@ -106,6 +89,8 @@ export default {
         CURRENT_COLOR: null,
       },
     },
+    algorithms: ["mergeSort", "heapSort", "quickSort", "bubbleSort"],
+    activeAlgorithmIndex: 0,
   }),
   computed: {
     animationSpeed() {
@@ -134,27 +119,22 @@ export default {
       }
     },
     startSort(event) {
-      const selectedAlgorithm = document.getElementsByClassName("active")[0]
-        .value;
+      const selectedAlgorithm = this.$el.querySelector(".active").value;
       event.target.classList.add("inProgress");
       this[selectedAlgorithm]();
     },
-    pickAlgorithm(event) {
-      const allAlgorithmsBtn = document.getElementsByClassName("algo-btn");
-      allAlgorithmsBtn.forEach((e) => {
-        e.classList.remove("active");
-      });
-      event.target.classList.add("active");
+    toggleActiveAlgorithm(index) {
+      if (this.activeAlgorithmIndex !== index) {
+        this.activeAlgorithmIndex = index;
+      }
     },
     randomIntFromInterval(min, max) {
       return Math.floor(Math.random() * (max - min + 1) + min);
     },
     toolbarLocker(animationsPromises, sortedArray, arrayBars) {
       Promise.all(animationsPromises).then(() => {
-        document
-          .getElementsByClassName("inProgress")[0]
-          .classList.remove("inProgress");
-        document.getElementById("toolbar").style.pointerEvents = "auto";
+        this.$refs.run.classList.remove("inProgress");
+        this.$refs.toolbar.style.pointerEvents = "auto";
         for (let i = 0; i < sortedArray.length; i++) {
           setTimeout(() => {
             arrayBars[
@@ -166,10 +146,9 @@ export default {
     },
     mergeSort() {
       const [animations, sortedArray] = mergeSortAlgorithm(this.array);
-      const arrayBars = document.getElementsByClassName("array-bar");
+      const arrayBars = this.$el.querySelectorAll(".array-bar");
       const animationsPromises = [];
-      console.log(animations);
-      document.getElementById("toolbar").style.pointerEvents = "none";
+      this.$refs.toolbar.style.pointerEvents = "none";
       for (let i = 0; i < animations.length; i++) {
         animationsPromises.push(
           new Promise((resolve) => {
@@ -182,7 +161,6 @@ export default {
                 i % 3 === 0
                   ? this.settings.colors.SECONDARY_COLOR
                   : this.settings.colors.DEFAULT_COLOR;
-              console.log(color);
               setTimeout(() => {
                 barOneStyle.backgroundColor = color;
                 barTwoStyle.backgroundColor = color;
@@ -203,9 +181,9 @@ export default {
     },
     quickSort() {
       let [animations, sortedArray] = quickSortAlgorithm(this.array);
-      const arrayBars = document.getElementsByClassName("array-bar");
+      const arrayBars = this.$el.querySelectorAll(".array-bar");
       const animationsPromises = [];
-      document.getElementById("toolbar").style.pointerEvents = "none";
+      this.$refs.toolbar.style.pointerEvents = "none";
       for (let i = 0; i < animations.length; i++) {
         animationsPromises.push(
           new Promise((resolve) => {
@@ -245,9 +223,9 @@ export default {
     },
     bubbleSort() {
       let [animations, sortedArray] = bubbleSortAlgorithm(this.array);
-      const arrayBars = document.getElementsByClassName("array-bar");
+      const arrayBars = this.$el.querySelectorAll(".array-bar");
       const animationsPromises = [];
-      document.getElementById("toolbar").style.pointerEvents = "none";
+      this.$refs.toolbar.style.pointerEvents = "none";
       for (let i = 0; i < animations.length; i++) {
         animationsPromises.push(
           new Promise((resolve) => {
@@ -287,9 +265,9 @@ export default {
     },
     heapSort() {
       const [animations, sortedArray] = heapSortAlgorithm(this.array);
-      const arrayBars = document.getElementsByClassName("array-bar");
+      const arrayBars = this.$el.querySelectorAll(".array-bar");
       const animationsPromises = [];
-      document.getElementById("toolbar").style.pointerEvents = "none";
+      this.$refs.toolbar.style.pointerEvents = "none";
       for (let i = 0; i < animations.length; i++) {
         animationsPromises.push(
           new Promise((resolve) => {
@@ -390,28 +368,6 @@ export default {
 .generate-btn:hover {
   cursor: pointer;
 }
-/*
-.generate-btn:before {
-  content: "";
-  position: absolute;
-  width: 100%;
-  height: 2px;
-  bottom: -4px;
-  left: 0;
-  background-color: #ffeadb;
-  visibility: hidden;
-  -webkit-transform: scaleX(0);
-  transform: scaleX(0);
-  -webkit-transition: all 0.3s ease-in-out 0s;
-  transition: all 0.15s ease-in-out 0s;
-}
-.generate-btn:hover:before {
-  visibility: visible;
-  -webkit-transform: scaleX(1);
-  transform: scaleX(1);
-} */
-
-/* Range */
 input[type="range"] {
   width: 210px;
   height: 30px;
