@@ -368,41 +368,36 @@ export default {
 .generate-btn:hover {
   cursor: pointer;
 }
-input[type="range"] {
-  width: 210px;
-  height: 30px;
-  overflow: hidden;
-  cursor: pointer;
-  background: transparent;
-  outline: none;
-}
-input[type="range"],
-input[type="range"]::-webkit-slider-runnable-track,
-input[type="range"]::-webkit-slider-thumb {
+/* Range */
+
+.speed-elem {
   -webkit-appearance: none;
-}
-input[type="range"]::-webkit-slider-runnable-track {
+  appearance: none;
   width: 200px;
   height: 10px;
   background: #ffeadb;
+  outline: none;
 }
-input[type="range"]::-webkit-slider-thumb {
-  position: relative;
-  height: 25px;
-  width: 25px;
-  margin-top: -8px;
-  background: steelblue;
+
+.speed-elem::-webkit-slider-thumb {
+  width: 200px;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 30px;
+  height: 30px;
+  background: #4682b4;
+  cursor: pointer;
   border-radius: 50%;
   border: 2px solid #ffeadb;
 }
-input[type="range"]::-webkit-slider-thumb::before {
-  position: absolute;
-  content: "";
-  height: 10px; /* equal to height of runnable track */
-  width: 300px; /* make this bigger than the widest range input element */
-  left: -302px; /* this should be -2px - width */
-  top: 8px; /* don't change this */
-  background: #ffeadb;
+
+.speed-elem::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  background: #4682b4;
+  cursor: pointer;
+  border-radius: 50%;
+  border: 2px solid #ffeadb;
 }
 /* /rAnge */
 .algorithm {
@@ -452,6 +447,9 @@ input[type="range"]::-webkit-slider-thumb::before {
 }
 .algo-list__item:hover > .algo-btn {
   cursor: pointer;
+}
+.toolbar--change .toolbar__text {
+  padding-bottom: 12px;
 }
 .toolbar--choose .toolbar__text {
   align-self: baseline;
