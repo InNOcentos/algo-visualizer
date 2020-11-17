@@ -83,7 +83,7 @@ export default {
       MULTIPLICATION_FACTOR: 3,
       ANIMATION_DELAY: 40,
       colors: {
-        RESULT_COLOR: "#ffaaa5",
+        RESULT_COLOR: "#ffbc5b",
         SECONDARY_COLOR: "#1c2b2d",
         DEFAULT_COLOR: "#ffeadb",
         CURRENT_COLOR: null,
@@ -367,6 +367,7 @@ export default {
 }
 .generate-btn:hover {
   cursor: pointer;
+  color: #ffbc5b;
 }
 /* Range */
 
@@ -449,11 +450,13 @@ export default {
   cursor: pointer;
 }
 .toolbar--change .toolbar__text {
+  color: #ffbc5b;
   padding-bottom: 12px;
 }
 .toolbar--choose .toolbar__text {
   align-self: baseline;
   margin-bottom: 11px;
+  color: #ffbc5b;
 }
 .toolbar--choose {
   align-items: flex-start;
@@ -469,7 +472,7 @@ export default {
 .run-btn:hover,
 .run-btn.inProgress {
   cursor: pointer;
-  background-color: #ff9a76;
+  background-color: #ffbc5b;
   color: #065c6f;
 }
 </style>
